@@ -1,7 +1,7 @@
 import React from 'react';
 import {IUser} from "../../../shared/api";
 import UserCard from './UserCard';
-import {DeleteUserAction} from "../helpers/actions";
+import {DeleteUserAction} from "../actions";
 
 interface IUsersList {
     useUsersList: () => IUser[],

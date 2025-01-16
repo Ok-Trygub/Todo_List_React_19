@@ -1,11 +1,11 @@
 import {startTransition, use, useOptimistic, useState} from "react";
 import {fetchUsers, IUser} from "../../../shared/api";
-import {createUserAction, deleteUserAction} from "./actions";
+import {createUserAction, deleteUserAction} from "../actions";
 
 
 const receiveUsers = fetchUsers();
 
-export const useUsers = () => {
+export const useTasks = () => {
     const [usersPromise, setUsersPromise] = useState<Promise<IUser[]>>(receiveUsers);
 
     const refetchUsers = (): void => {
@@ -22,14 +22,14 @@ export const useUsers = () => {
         (deletedUsers, id: string) => deletedUsers.concat(id)
     );
 
-    const useUsersList = () => {
+    const useTasksList = () => {
         const users = use(usersPromise);
         return users.concat(createdUsers).filter(user => !deletedUsersIds.includes(user.id))
     }
 
     return {
-        createUserAction: createUserAction({refetchUsers, optimisticCreate}),
-        deleteUserAction: deleteUserAction({refetchUsers, optimisticDelete}),
-        useUsersList,
+        createTaskAction: createUserAction({refetchUsers, optimisticCreate}),
+        deleteTaskAction: deleteUserAction({refetchUsers, optimisticDelete}),
+        useTasksList
     }
 }

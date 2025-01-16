@@ -3,7 +3,7 @@ import UsersList from "..//Users/components/UsersList";
 import CreateUserFormUseActionState
     from "./components/UserForms/CreateUserFormUseActionState/CreateUserFormUseActionState";
 import {ErrorBoundary} from "react-error-boundary";
-import {useUsers} from "./helpers/use-users";
+import {useUsers} from "./hooks/use-users";
 
 
 const UsersPage: React.FC = () => {

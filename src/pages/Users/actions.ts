@@ -1,4 +1,4 @@
-import {createUser, deleteUser, IUser} from "../../../shared/api";
+import {createUser, deleteUser, IUser} from "../../shared/api";
 
 type CreateActionState = {
     error?: string,
