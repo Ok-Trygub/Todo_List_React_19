@@ -1,14 +1,19 @@
-import React, {use} from 'react';
+import React from 'react';
 import {IUser} from "../../../shared/api";
 import UserCard from './UserCard';
+import {DeleteUserAction} from "../helpers/actions";
 
 interface IUsersList {
-    usersPromise: Promise<IUser[]>,
-    refetchUsers: () => void
+    useUsersList: () => IUser[],
+    deleteUserAction: DeleteUserAction
 }
 
-const UsersList: React.FC<IUsersList> = ({usersPromise, refetchUsers}) => {
-    const users = use(usersPromise);
+const UsersList: React.FC<IUsersList> = (
+    {
+        useUsersList,
+        deleteUserAction
+    }) => {
+    const users = useUsersList();
 
     return (
         <div className={'flex flex-col'}>
@@ -16,7 +21,7 @@ const UsersList: React.FC<IUsersList> = ({usersPromise, refetchUsers}) => {
                 <UserCard
                     key={user.id}
                     user={user}
-                    refetchUsers={refetchUsers}
+                    deleteUserAction={deleteUserAction}
                 />
             ))}
         </div>

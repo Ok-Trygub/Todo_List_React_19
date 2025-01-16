@@ -1,12 +1,12 @@
 import React, {useActionState} from 'react';
-import {createUserAction} from "../../../helpers/actions";
+import {CreateUserAction} from "../../../helpers/actions";
 
+interface ICreateUserFormUseActionState{
+    createUserAction: CreateUserAction
+}
 
-const CreateUserFormUseActionState: React.FC<{ refetchUsers: () => void }> = ({refetchUsers}) => {
-    const [state, handleCreateUser, isPending] = useActionState(
-        createUserAction({refetchUsers}),
-        {email: ''}
-    );
+const CreateUserFormUseActionState: React.FC<ICreateUserFormUseActionState> = ({createUserAction}) => {
+    const [state, handleCreateUser, isPending] = useActionState(createUserAction, {email: ''});
 
     return (
         <form action={handleCreateUser}

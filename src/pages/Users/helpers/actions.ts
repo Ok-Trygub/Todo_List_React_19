@@ -1,16 +1,18 @@
-import {createUser, deleteUser} from "../../../shared/api";
+import {createUser, deleteUser, IUser} from "../../../shared/api";
 
 type CreateActionState = {
     error?: string,
     email: string
 }
 
+export type CreateUserAction = (state: CreateActionState, formData: FormData) => Promise<CreateActionState>
+
 export const createUserAction =
-    ({refetchUsers}: { refetchUsers: () => void }) =>
-        async (
-            prevState: CreateActionState,
-            formData: FormData
-        ): Promise<CreateActionState> => {
+    ({refetchUsers, optimisticCreate}: {
+        refetchUsers: () => void,
+        optimisticCreate: (user: IUser) => void
+    }): CreateUserAction =>
+        async (_, formData) => {
             const email = formData.get('email') as string;
 
             if (email === 'admin@google.com') {
@@ -21,10 +23,12 @@ export const createUserAction =
             }
 
             try {
-                await createUser({
+                const newUser = {
                     email,
                     id: crypto.randomUUID()
-                })
+                }
+                optimisticCreate(newUser);
+                await createUser(newUser);
 
                 refetchUsers();
                 return {
@@ -32,7 +36,6 @@ export const createUserAction =
                 }
             } catch (e) {
                 return {
-                    ...prevState,
                     error: undefined,
                     email: '',
                 };
@@ -42,10 +45,18 @@ export const createUserAction =
 type DeleteActionState = {
     error?: string
 }
+
+export type DeleteUserAction = (state: DeleteActionState, formData: FormData) => Promise<DeleteActionState>
+
 export const deleteUserAction =
-    ({refetchUsers, id}: { refetchUsers: () => void, id: string }) =>
-        async (): Promise<DeleteActionState> => {
+    ({refetchUsers, optimisticDelete}: {
+        refetchUsers: () => void,
+        optimisticDelete: (userId: string) => void
+    }): DeleteUserAction =>
+        async (state, formData) => {
+            const id = formData.get('id') as string;
             try {
+                optimisticDelete(id)
                 await deleteUser(id);
                 refetchUsers();
                 return {}
