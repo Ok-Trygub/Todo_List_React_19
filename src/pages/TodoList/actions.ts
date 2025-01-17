@@ -1,64 +1,61 @@
-import {createUser, deleteUser, IUser} from "../../shared/api";
+import {createTask, deleteUser, ITask} from "../../shared/api";
 
-type createTaskAction = {
+type CreateTaskActionState = {
     error?: string,
-    email: string
+    title: string
 }
 
-export type CreateUserAction = (state: createTaskAction, formData: FormData) => Promise<createTaskAction>
+export type CreateTaskAction = (state: CreateTaskActionState, formData: FormData) => Promise<CreateTaskActionState>
 
-export const createUserAction =
-    ({refetchUsers, optimisticCreate}: {
-        refetchUsers: () => void,
-        optimisticCreate: (user: IUser) => void
-    }): CreateUserAction =>
+export const createTaskAction =
+    ({
+         refetchTasks,
+         userId
+     }: {
+        refetchTasks: () => void,
+        userId: string | undefined
+    }): CreateTaskAction =>
         async (_, formData) => {
-            const email = formData.get('email') as string;
-
-            if (email === 'admin@google.com') {
-                return {
-                    email,
-                    error: "Admin email isn't allowed",
-                };
-            }
+            const title = formData.get('title') as string;
 
             try {
-                const newUser = {
-                    email,
-                    id: crypto.randomUUID()
+                const newTask: ITask = {
+                    title,
+                    createdAt: Date.now(),
+                    done: 'false',
+                    userId: userId ? userId : '',
                 }
-                optimisticCreate(newUser);
-                await createUser(newUser);
 
-                refetchUsers();
+                await createTask(newTask);
+                refetchTasks();
                 return {
-                    email: ''
+                    title: ''
                 }
             } catch (e) {
                 return {
-                    error: undefined,
-                    email: '',
+                    error: 'Error while creating task',
+                    title,
                 };
             }
         }
 
-type DeleteActionState = {
+
+
+type DeleteTaskActionState = {
     error?: string
 }
 
-export type DeleteUserAction = (state: DeleteActionState, formData: FormData) => Promise<DeleteActionState>
+export type DeleteTaskAction = (state: DeleteTaskActionState, formData: FormData) => Promise<DeleteTaskActionState>
 
-export const deleteUserAction =
-    ({refetchUsers, optimisticDelete}: {
-        refetchUsers: () => void,
-        optimisticDelete: (userId: string) => void
-    }): DeleteUserAction =>
+export const deleteTaskAction =
+    ({refetchTasks}: {
+        refetchTasks: () => void,
+    }): DeleteTaskAction =>
         async (state, formData) => {
             const id = formData.get('id') as string;
             try {
-                optimisticDelete(id)
                 await deleteUser(id);
-                refetchUsers();
+                refetchTasks();
                 return {}
             } catch (e) {
                 return {

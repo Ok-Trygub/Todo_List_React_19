@@ -18,7 +18,7 @@ const UserCard: React.FC<IUserCard> = ({user, deleteUserAction}) => {
             <form action={handleDelete} className={'ml-auto'}>
                 <input type="hidden" name={"id"} value={user.id}/>
                 <Link to={`/${user.id}/tasks`}
-                      className={'bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded ml-auto disabled:bg-gray-400'}
+                      className={'bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded ml-auto mr-4 disabled:bg-gray-400'}
                 >
                     Tasks
                 </Link>

@@ -4,23 +4,33 @@ export interface IUser {
 }
 
 export interface ITask {
-    id: string,
+    id?: string,
     userId: string,
     title: string,
     done: string,
-    createdAt: string
+    createdAt: number
 }
 
 interface IGetTasks {
-    page: number,
-    perPage: number,
-    query: string,
-    sort: {
+    page?: number,
+    perPage?: number,
+    query?: string,
+    sort?: {
         createdAt: "asc" | "desc"
     },
     filters?: {
-        userId: string
+        userId: string | undefined
     }
+}
+
+export type PaginatedResponse<T> = {
+    first: 1,
+    prev: null,
+    next: null,
+    last: 0,
+    pages: 0,
+    items: 0,
+    data: []
 }
 
 export const fetchUsers = () => {
@@ -50,11 +60,11 @@ export const fetchTasks = (
         perPage = 10,
         sort = {createdAt: "asc"},
         filters
-    }: IGetTasks): Promise<ITask[]> => {
+    }: IGetTasks): Promise<PaginatedResponse<ITask>> => {
     return fetch(
         `http://localhost:3001/tasks?_page=${page}&_per_page=${perPage}&sort=${sort.createdAt === "asc" ?
             "createdAt" : "-createdAt"}&userId=${filters?.userId}`
-    ).then((resp) => resp.json() as Promise<ITask[]>)
+    ).then((resp) => resp.json())
 }
 
 export const createTask = (task: ITask): Promise<ITask> => {

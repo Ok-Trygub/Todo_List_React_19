@@ -1,14 +1,15 @@
-import React from 'react';
+import React, {use} from 'react';
 import TaskCard from "./TaskCard";
 import {ITask} from "../../../shared/api";
 
 interface ITasksList {
-    // useTasksList: () => ITask[],
-    // deleteTaskAction: DeleteUserAction
+    tasksPromise: Promise<ITask[]>,
+    refetchTasks: () => void
 }
 
-const TasksList: React.FC<ITasksList> = ({}) => {
-    const tasks = [] as ITask[];
+const TasksList: React.FC<ITasksList> = ({tasksPromise, refetchTasks}) => {
+    const tasks = use(tasksPromise);
+
 
     return (
         <div className={'flex flex-col'}>
@@ -16,6 +17,7 @@ const TasksList: React.FC<ITasksList> = ({}) => {
                 <TaskCard
                     key={task.id}
                     task={task}
+                    refetchTasks={refetchTasks}
                 />
             ))}
         </div>
