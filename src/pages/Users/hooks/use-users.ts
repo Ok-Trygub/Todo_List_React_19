@@ -1,16 +1,11 @@
-import {startTransition, use, useOptimistic, useState} from "react";
-import {fetchUsers, IUser} from "../../../shared/api";
+import {use, useOptimistic} from "react";
+import {IUser} from "../../../shared/api";
 import {createUserAction, deleteUserAction} from "../actions";
+import {useUsersGlobal} from "../../../entities/user";
 
-
-const receiveUsers = fetchUsers();
 
 export const useUsers = () => {
-    const [usersPromise, setUsersPromise] = useState<Promise<IUser[]>>(receiveUsers);
-
-    const refetchUsers = (): void => {
-        startTransition(() => setUsersPromise(fetchUsers()))
-    }
+    const {refetchUsers, usersPromise} = useUsersGlobal();
 
     const [createdUsers, optimisticCreate] = useOptimistic(
         [] as IUser[],

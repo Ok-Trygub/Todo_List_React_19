@@ -1,4 +1,4 @@
-import {createTask, deleteUser, ITask} from "../../shared/api";
+import {createTask, deleteTask, ITask} from "../../shared/api";
 
 type CreateTaskActionState = {
     error?: string,
@@ -53,8 +53,9 @@ export const deleteTaskAction =
     }): DeleteTaskAction =>
         async (state, formData) => {
             const id = formData.get('id') as string;
+            console.log(id)
             try {
-                await deleteUser(id);
+                await deleteTask(id);
                 refetchTasks();
                 return {}
             } catch (e) {

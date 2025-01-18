@@ -19,7 +19,8 @@ interface IGetTasks {
         createdAt: "asc" | "desc"
     },
     filters?: {
-        userId: string | undefined
+        userId: string | undefined,
+        title?: string
     }
 }
 
@@ -33,7 +34,10 @@ export type PaginatedResponse<T> = {
     data: []
 }
 
-export const fetchUsers = () => {
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+export const fetchUsers = async () => {
+    await sleep(1000)
     return fetch("http://localhost:3001/users").then((resp) => resp.json() as Promise<IUser[]>)
 }
 
@@ -63,7 +67,7 @@ export const fetchTasks = (
     }: IGetTasks): Promise<PaginatedResponse<ITask>> => {
     return fetch(
         `http://localhost:3001/tasks?_page=${page}&_per_page=${perPage}&sort=${sort.createdAt === "asc" ?
-            "createdAt" : "-createdAt"}&userId=${filters?.userId}`
+            "createdAt" : "-createdAt"}&userId=${filters?.userId}&title=${filters?.title}`
     ).then((resp) => resp.json())
 }
 
@@ -78,7 +82,7 @@ export const createTask = (task: ITask): Promise<ITask> => {
 }
 
 export const updateTask = (id: string, task: Partial<ITask>): Promise<ITask> => {
-    return fetch(`http://localhost:3001/tasks${id}`, {
+    return fetch(`http://localhost:3001/tasks/${id}`, {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json"
@@ -88,7 +92,7 @@ export const updateTask = (id: string, task: Partial<ITask>): Promise<ITask> => 
 }
 
 export const deleteTask = (id: string) => {
-    return fetch(`http://localhost:3001/tasks${id}`, {
+    return fetch(`http://localhost:3001/tasks/${id}`, {
         method: "DELETE"
     }).then((res) => res.json())
 }

@@ -4,16 +4,39 @@ import CreateTaskForm from "./components/CreateTaskForm";
 import TasksList from "./components/TasksList";
 import {useParams} from "react-router-dom";
 import {fetchTasks} from "../../shared/api";
+import Pagination from "../Users/components/Pagination";
 
 
 const TodoListPage = () => {
     const {userId} = useParams();
-    const [paginatedTasksPromise, setPaginatedTasksPromise] = useState(() => fetchTasks({filters: {userId}}));
+    const [search, setSearch] = useState<string>('')
+    const [page, setPage] = useState<number>(1)
+
+    const getTasks = async ({page = 1, title = search}: {
+        page?: number, title?: string
+    }) => fetchTasks({filters: {userId, title}, page});
+
+    const [paginatedTasksPromise, setPaginatedTasksPromise] = useState(getTasks({}));
+
 
     const tasksPromise = useMemo(() => paginatedTasksPromise.then(r => r.data), [paginatedTasksPromise]);
 
     const refetchTasks = (): void => {
-        startTransition(() => setPaginatedTasksPromise(fetchTasks({filters: {userId}})))
+        startTransition(() =>
+            setPaginatedTasksPromise(getTasks({page})))
+    }
+
+    const onPageChange = (newPage: number) => {
+        setPage(newPage);
+        setPaginatedTasksPromise((getTasks({page: newPage})));
+    }
+
+    const handleChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value);
+
+        startTransition(() => {
+            setPaginatedTasksPromise(getTasks({title: e.target.value}))
+        })
     }
 
     return (
@@ -25,6 +48,21 @@ const TodoListPage = () => {
                 userId={userId}
                 refetchTasks={refetchTasks}
             />
+
+            <div className={'flex gap-2'}>
+                <input
+                    type="text"
+                    placeholder={'Search'}
+                    className={'border p-2 rounded'}
+                    value={search}
+                    onChange={handleChangeSearch}
+                />
+                <select className={'border p-2 rounded'}>
+                    <option value="all">New to Old</option>
+                    <option value="completed">Old to New</option>
+                </select>
+            </div>
+
             <ErrorBoundary fallbackRender={(e) =>
                 <div className={'text-red-500'}>{`Something went wrong: ${e.error}`}</div>}
             >
@@ -32,6 +70,12 @@ const TodoListPage = () => {
                     <TasksList
                         tasksPromise={tasksPromise}
                         refetchTasks={refetchTasks}
+                    />
+
+                    <Pagination
+                        tasksPaginated={paginatedTasksPromise}
+                        page={1}
+                        onChangePage={onPageChange}
                     />
                 </Suspense>
             </ErrorBoundary>
