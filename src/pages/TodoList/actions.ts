@@ -53,7 +53,6 @@ export const deleteTaskAction =
     }): DeleteTaskAction =>
         async (state, formData) => {
             const id = formData.get('id') as string;
-            console.log(id)
             try {
                 await deleteTask(id);
                 refetchTasks();

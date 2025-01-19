@@ -66,8 +66,8 @@ export const fetchTasks = (
         filters
     }: IGetTasks): Promise<PaginatedResponse<ITask>> => {
     return fetch(
-        `http://localhost:3001/tasks?_page=${page}&_per_page=${perPage}&sort=${sort.createdAt === "asc" ?
-            "createdAt" : "-createdAt"}&userId=${filters?.userId}&title=${filters?.title}`
+        `http://localhost:3001/tasks?_page=${page}_limit=${perPage}&sort=${sort.createdAt === "asc" ?
+            "createdAt" : "-createdAt"}&userId=${filters?.userId}&title=${filters?.title && encodeURIComponent(filters.title)}`
     ).then((resp) => resp.json())
 }
 
